@@ -9,5 +9,4 @@ public class WatchWiseApiApplication {
 	public static void main(String[] args) {
 		SpringApplication.run(WatchWiseApiApplication.class, args);
 	}
-
 }
