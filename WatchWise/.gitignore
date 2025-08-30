@@ -1,0 +1,10 @@
+### Visual Studio .Net ###
+bin/
+obj/
+.vs/
+
+### Rider ###
+.idea/
+
+### VS Code ###
+.vscode/
