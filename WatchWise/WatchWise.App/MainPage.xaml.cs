@@ -1,24 +1,37 @@
-﻿namespace WatchWise.App
+using Microsoft.Maui.Controls;
+using System;
+using WatchWise.App.Services;
+
+namespace WatchWise.App
 {
     public partial class MainPage : ContentPage
     {
-        int count = 0;
+        private readonly TitleSearchService _titleSearchService = new();
 
         public MainPage()
         {
             InitializeComponent();
         }
 
-        private void OnCounterClicked(object? sender, EventArgs e)
+        private async void OnSearchClicked(object? sender, EventArgs e)
         {
-            count++;
+            var query = QueryEntry.Text;
+            if (string.IsNullOrWhiteSpace(query))
+            {
+                ResultLabel.Text = "Please enter a search query.";
+                return;
+            }
 
-            if (count == 1)
-                CounterBtn.Text = $"Clicked {count} time";
-            else
-                CounterBtn.Text = $"Clicked {count} times";
-
-            SemanticScreenReader.Announce(CounterBtn.Text);
+            ResultLabel.Text = "Searching...";
+            try
+            {
+                var result = await _titleSearchService.SearchAsync(query);
+                ResultLabel.Text = result;
+            }
+            catch (Exception ex)
+            {
+                ResultLabel.Text = ex.Message;
+            }
         }
     }
 }
