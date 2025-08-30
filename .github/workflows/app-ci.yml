@@ -1,0 +1,26 @@
+---
+name: App CI
+
+'on':
+  push:
+    paths:
+      - 'WatchWise/**'
+  pull_request:
+    paths:
+      - 'WatchWise/**'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '9.0.x'
+      - name: Install MAUI workload
+        run: dotnet workload install maui
+      - name: Restore dependencies
+        run: dotnet restore WatchWise/WatchWise.sln
+      - name: Build
+        run: dotnet build --no-restore WatchWise/WatchWise.sln
