@@ -1,0 +1,14 @@
+spring:
+  application:
+    name: watch-wise-api
+  jpa:
+    hibernate:
+      ddl-auto: update
+
+trakt:
+  api:
+    base-url: https://api.trakt.tv
+    client-id: changeme
+jwt:
+  secret: changemechangemechangemechangeme
+  expiration-seconds: 3600
