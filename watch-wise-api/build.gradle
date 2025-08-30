@@ -1,42 +1,120 @@
 plugins {
-	id 'java'
-	id 'org.springframework.boot' version '3.5.4'
-	id 'io.spring.dependency-management' version '1.1.7'
+    id 'java'
+    id 'org.springframework.boot' version '3.4.0'
+    id 'io.spring.dependency-management' version '1.1.6'
+    id 'jacoco'
 }
 
-group = 'co.com.jdti'
+group = 'com.watchwise'
 version = '0.0.1-SNAPSHOT'
-description = 'watch-wise-api'
+description = 'Backend service for WatchWise.App'
 
 java {
-	toolchain {
-		languageVersion = JavaLanguageVersion.of(21)
-	}
-}
-
-configurations {
-	compileOnly {
-		extendsFrom annotationProcessor
-	}
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(21)
+    }
 }
 
 repositories {
-	mavenCentral()
+    mavenCentral()
 }
 
 dependencies {
-	// Spring starters
-	implementation 'org.springframework.boot:spring-boot-starter-web'
+    // Spring Boot starters
+    implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+    implementation 'org.springframework.boot:spring-boot-starter-data-redis'
+    implementation 'org.springframework.boot:spring-boot-starter-security'
+    implementation 'org.springframework.boot:spring-boot-starter-validation'
+    implementation 'org.springframework.boot:spring-boot-starter-web'
 
-	// Third party
-	compileOnly 'org.projectlombok:lombok'
-	annotationProcessor 'org.projectlombok:lombok'
+    // API documentation
+    implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.8.9'
 
-	// Test
-	testImplementation 'org.springframework.boot:spring-boot-starter-test'
-	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+    // Database migration
+    implementation 'org.flywaydb:flyway-core'
+    implementation 'org.flywaydb:flyway-database-postgresql'
+    runtimeOnly 'org.postgresql:postgresql'
+
+    // JWT
+    implementation 'io.jsonwebtoken:jjwt-api:0.13.0'
+    runtimeOnly 'io.jsonwebtoken:jjwt-impl:0.13.0'
+    runtimeOnly 'io.jsonwebtoken:jjwt-jackson:0.13.0'
+
+    // Mapping
+    implementation 'org.mapstruct:mapstruct:1.5.5.Final'
+    annotationProcessor 'org.mapstruct:mapstruct-processor:1.5.5.Final'
+
+    // Lombok
+    compileOnly 'org.projectlombok:lombok'
+    annotationProcessor 'org.projectlombok:lombok'
+    testCompileOnly 'org.projectlombok:lombok'
+    testAnnotationProcessor 'org.projectlombok:lombok'
+
+    // Testing
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+    testImplementation 'org.springframework.boot:spring-boot-testcontainers'
+    testImplementation 'org.springframework.security:spring-security-test'
+    testImplementation 'org.testcontainers:junit-jupiter'
+    testImplementation 'org.testcontainers:postgresql'
+    testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 }
 
-tasks.named('test') {
-	useJUnitPlatform()
+
+test {
+    useJUnitPlatform()
+    finalizedBy jacocoTestReport
 }
+
+jacoco {
+    toolVersion = '0.8.11'
+}
+
+jacocoTestReport {
+    reports {
+        xml.required = true
+        html.required = true
+    }
+    def excludes = [
+            'com/watchwise/domain/**',
+            'com/watchwise/WatchWiseApiApplication*',
+            'com/watchwise/auth/JwtAuthenticationFilter*',
+            'com/watchwise/auth/SecurityConfig*',
+            'com/watchwise/auth/JwtProperties*',
+            'com/watchwise/config/**'
+    ]
+    classDirectories.setFrom(files(classDirectories.files.collect {
+        fileTree(dir: it, exclude: excludes)
+    }))
+}
+
+jacocoTestCoverageVerification {
+    def excludes = [
+            'com/watchwise/domain/**',
+            'com/watchwise/WatchWiseApiApplication*',
+            'com/watchwise/auth/JwtAuthenticationFilter*',
+            'com/watchwise/auth/SecurityConfig*',
+            'com/watchwise/auth/JwtProperties*',
+            'com/watchwise/config/**'
+    ]
+    classDirectories.setFrom(files(classDirectories.files.collect {
+        fileTree(dir: it, exclude: excludes)
+    }))
+    violationRules {
+        rule {
+            limit {
+                counter = 'LINE'
+                value = 'COVEREDRATIO'
+                minimum = 0.85
+            }
+        }
+        rule {
+            limit {
+                counter = 'BRANCH'
+                value = 'COVEREDRATIO'
+                minimum = 0.50
+            }
+        }
+    }
+}
+
+check.dependsOn jacocoTestCoverageVerification
