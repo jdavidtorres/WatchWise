@@ -1,14 +1,126 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-             x:Class="WatchWise.App.MainPage">
-    <VerticalStackLayout
-        Padding="30,0"
-        Spacing="25">
-        <Entry x:Name="QueryEntry" Placeholder="Search titles" />
-        <Button Text="Search" Clicked="OnSearchClicked" />
-        <ScrollView>
-            <Label x:Name="ResultLabel" Text="Enter a query to search" />
-        </ScrollView>
-    </VerticalStackLayout>
+             x:Class="WatchWise.App.MainPage"
+             Title="WatchWise Search">
+    <ScrollView>
+        <VerticalStackLayout Padding="30,0" Spacing="25">
+            <!-- Search Section -->
+            <Label Text="Search for Movies and TV Shows" 
+                   FontSize="24" 
+                   FontAttributes="Bold"
+                   HorizontalOptions="Center" />
+            
+            <Entry x:Name="QueryEntry" 
+                   Placeholder="Enter at least 2 characters..." 
+                   Text="{Binding SearchQuery}"
+                   FontSize="16" />
+            
+            <!-- Type Filter -->
+            <StackLayout Orientation="Horizontal" HorizontalOptions="Center">
+                <Label Text="Type:" VerticalOptions="Center" />
+                <Picker x:Name="TypePicker" Title="All Types" SelectedIndex="0">
+                    <Picker.Items>
+                        <x:String>All Types</x:String>
+                        <x:String>Movies</x:String>
+                        <x:String>TV Shows</x:String>
+                    </Picker.Items>
+                </Picker>
+            </StackLayout>
+            
+            <Button Text="Search" 
+                    Command="{Binding SearchCommand}"
+                    BackgroundColor="#007ACC"
+                    TextColor="White"
+                    FontSize="16" />
+            
+            <!-- Loading Indicator -->
+            <ActivityIndicator IsVisible="{Binding IsLoading}" 
+                               IsRunning="{Binding IsLoading}" 
+                               Color="#007ACC" />
+            
+            <!-- Results Section -->
+            <Label Text="Search Results:" 
+                   FontSize="18" 
+                   FontAttributes="Bold"
+                   IsVisible="{Binding HasResults}" />
+            
+            <CollectionView x:Name="ResultsCollection" 
+                            ItemsSource="{Binding SearchResults}"
+                            IsVisible="{Binding HasResults}">
+                <CollectionView.ItemTemplate>
+                    <DataTemplate>
+                        <Grid Padding="10" RowDefinitions="Auto,Auto,Auto,Auto">
+                            <Label Grid.Row="0" 
+                                   Text="{Binding Name}" 
+                                   FontSize="16" 
+                                   FontAttributes="Bold" />
+                            <Label Grid.Row="1" 
+                                   Text="{Binding Year, StringFormat='Year: {0}'}" 
+                                   FontSize="14" 
+                                   TextColor="Gray" />
+                            <Label Grid.Row="2" 
+                                   Text="{Binding Type, StringFormat='Type: {0}'}" 
+                                   FontSize="14" 
+                                   TextColor="Gray" />
+                            <Label Grid.Row="3" 
+                                   Text="{Binding Id, StringFormat='ID: {0}'}" 
+                                   FontSize="12" 
+                                   TextColor="LightGray" />
+                            <BoxView Grid.Row="3" 
+                                     HeightRequest="1" 
+                                     BackgroundColor="LightGray" 
+                                     Margin="0,10,0,0" />
+                        </Grid>
+                    </DataTemplate>
+                </CollectionView.ItemTemplate>
+            </CollectionView>
+            
+            <!-- No Results Message -->
+            <Label Text="No results found. Try a different search term." 
+                   FontSize="16" 
+                   TextColor="Gray"
+                   HorizontalOptions="Center"
+                   IsVisible="{Binding ShowNoResults}" />
+            
+            <!-- Watchlist Section -->
+            <BoxView HeightRequest="2" BackgroundColor="LightGray" Margin="0,20" />
+            
+            <Label Text="My Watchlist:" 
+                   FontSize="18" 
+                   FontAttributes="Bold" />
+            
+            <Button Text="Load Watchlist" 
+                    x:Name="LoadWatchlistButton"
+                    Clicked="OnLoadWatchlistClicked"
+                    BackgroundColor="#28A745"
+                    TextColor="White" />
+            
+            <CollectionView x:Name="WatchlistCollection" 
+                            ItemsSource="{Binding WatchlistItems}">
+                <CollectionView.ItemTemplate>
+                    <DataTemplate>
+                        <Grid Padding="10" RowDefinitions="Auto,Auto,Auto">
+                            <Label Grid.Row="0" 
+                                   Text="{Binding Name}" 
+                                   FontSize="16" 
+                                   FontAttributes="Bold" />
+                            <Label Grid.Row="1" 
+                                   Text="{Binding Year, StringFormat='Year: {0}'}" 
+                                   FontSize="14" 
+                                   TextColor="Gray" />
+                            <Label Grid.Row="2" 
+                                   Text="{Binding Type, StringFormat='Type: {0}'}" 
+                                   FontSize="14" 
+                                   TextColor="Gray" />
+                            <BoxView Grid.Row="2" 
+                                     HeightRequest="1" 
+                                     BackgroundColor="LightGray" 
+                                     Margin="0,10,0,0" />
+                        </Grid>
+                    </DataTemplate>
+                </CollectionView.ItemTemplate>
+            </CollectionView>
+        </VerticalStackLayout>
+    </ScrollView>
 </ContentPage>
