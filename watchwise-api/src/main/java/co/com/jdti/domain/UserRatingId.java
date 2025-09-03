@@ -1,0 +1,18 @@
+package co.com.jdti.domain;
+
+import jakarta.persistence.Embeddable;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+import java.io.Serializable;
+import java.util.UUID;
+
+@Embeddable
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+public class UserRatingId implements Serializable {
+    private UUID userId;
+    private String canonicalId;
+}

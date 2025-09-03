@@ -5,7 +5,7 @@ plugins {
     id 'jacoco'
 }
 
-group = 'com.watchwise'
+group = 'co.com.jdti'
 version = '0.0.1-SNAPSHOT'
 description = 'Backend service for WatchWise.App'
 
@@ -76,12 +76,12 @@ jacocoTestReport {
         html.required = true
     }
     def excludes = [
-            'com/watchwise/domain/**',
-            'com/watchwise/WatchWiseApiApplication*',
-            'com/watchwise/auth/JwtAuthenticationFilter*',
-            'com/watchwise/auth/SecurityConfig*',
-            'com/watchwise/auth/JwtProperties*',
-            'com/watchwise/config/**'
+            'co/com/jdti/domain/**',
+            'co/com/jdti/WatchWiseApiApplication*',
+            'co/com/jdti/auth/JwtAuthenticationFilter*',
+            'co/com/jdti/auth/SecurityConfig*',
+            'co/com/jdti/auth/JwtProperties*',
+            'co/com/jdti/config/**'
     ]
     classDirectories.setFrom(files(classDirectories.files.collect {
         fileTree(dir: it, exclude: excludes)
@@ -90,12 +90,12 @@ jacocoTestReport {
 
 jacocoTestCoverageVerification {
     def excludes = [
-            'com/watchwise/domain/**',
-            'com/watchwise/WatchWiseApiApplication*',
-            'com/watchwise/auth/JwtAuthenticationFilter*',
-            'com/watchwise/auth/SecurityConfig*',
-            'com/watchwise/auth/JwtProperties*',
-            'com/watchwise/config/**'
+            'co/com/jdti/domain/**',
+            'co/com/jdti/WatchWiseApiApplication*',
+            'co/com/jdti/auth/JwtAuthenticationFilter*',
+            'co/com/jdti/auth/SecurityConfig*',
+            'co/com/jdti/auth/JwtProperties*',
+            'co/com/jdti/config/**'
     ]
     classDirectories.setFrom(files(classDirectories.files.collect {
         fileTree(dir: it, exclude: excludes)
