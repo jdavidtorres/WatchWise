@@ -4,10 +4,10 @@ name: API CI
 'on':
   push:
     paths:
-      - 'watch-wise-api/**'
+      - 'watchwise-api/**'
   pull_request:
     paths:
-      - 'watch-wise-api/**'
+      - 'watchwise-api/**'
 
 jobs:
   build:
@@ -21,5 +21,5 @@ jobs:
           java-version: '21'
       - name: Build with Gradle
         run: |
-          cd watch-wise-api
-          gradle test
+          cd watchwise-api
+          ./gradlew build
