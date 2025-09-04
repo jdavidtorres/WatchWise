@@ -13,12 +13,12 @@ Monorepo que contiene el cliente móvil y la API backend para **WatchWise**, una
 │  LICENSE                   # Licencia MIT
 │  .github/workflows/        # Pipelines CI/CD
 │
-├─ watchwise-app/            # .NET MAUI (C#) + SQLite
+├─ WatchWise/                 # .NET MAUI (C#) + SQLite
 │  ├─ WatchWise.App/         # Proyecto principal MAUI
 │  ├─ WatchWise.sln          # Solución .NET
 │  └─ README.md              # Documentación específica del frontend
 │
-└─ watchwise-api/            # Spring Boot (Java 21) + Gradle + PostgreSQL
+└─ watch-wise-api/           # Spring Boot (Java 21) + Gradle + PostgreSQL
    ├─ src/                   # Código fuente
    ├─ build.gradle           # Configuración de dependencias
    ├─ gradlew               # Gradle wrapper
@@ -37,7 +37,7 @@ Monorepo que contiene el cliente móvil y la API backend para **WatchWise**, una
 ### Ejecutar el Frontend (.NET MAUI)
 
 ```bash
-cd watchwise-app
+cd WatchWise
 dotnet restore
 dotnet build
 
@@ -51,7 +51,7 @@ dotnet run
 ### Ejecutar el Backend (Spring Boot)
 
 ```bash
-cd watchwise-api
+cd watch-wise-api
 
 # Levantar servicios de base de datos
 docker compose up -d postgres redis
@@ -69,18 +69,18 @@ docker compose up -d postgres redis
 
 ### CI/CD
 
-- **Pipeline Frontend**: Se ejecuta solo con cambios en `watchwise-app/**`
-- **Pipeline Backend**: Se ejecuta solo con cambios en `watchwise-api/**`
+- **Pipeline Frontend**: Se ejecuta solo con cambios en `WatchWise/**`
+- **Pipeline Backend**: Se ejecuta solo con cambios en `watch-wise-api/**`
 
 ### Testing
 
 ```bash
 # Frontend
-cd watchwise-app
+cd WatchWise
 dotnet test
 
 # Backend
-cd watchwise-api
+cd watch-wise-api
 ./gradlew test
 ```
 
@@ -88,12 +88,12 @@ cd watchwise-api
 
 ## 📋 Stack Tecnológico
 
-### Frontend (watchwise-app)
+### Frontend (WatchWise)
 - **.NET MAUI** (C#) - Framework multiplataforma
 - **SQLite** - Base de datos local
 - **HttpClient** - Comunicación con backend
 
-### Backend (watchwise-api)
+### Backend (watch-wise-api)
 - **Java 21** / **Spring Boot 3.4+**
 - **Gradle** - Build tool
 - **PostgreSQL** - Base de datos principal

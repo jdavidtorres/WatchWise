@@ -4,10 +4,10 @@ name: App CI
 'on':
   push:
     paths:
-      - 'watchwise-app/**'
+      - 'WatchWise/**'
   pull_request:
     paths:
-      - 'watchwise-app/**'
+      - 'WatchWise/**'
 
 jobs:
   build:
@@ -21,6 +21,6 @@ jobs:
       - name: Install MAUI workload
         run: dotnet workload install maui
       - name: Restore dependencies
-        run: dotnet restore watchwise-app/WatchWise.sln
+        run: dotnet restore WatchWise/WatchWise.sln
       - name: Build
-        run: dotnet build --no-restore watchwise-app/WatchWise.sln
+        run: dotnet build --no-restore WatchWise/WatchWise.sln
