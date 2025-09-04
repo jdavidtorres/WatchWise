@@ -48,9 +48,8 @@ public class TitleController {
     })
     @GetMapping("/search")
     public List<TitleLiteDto> search(
-        @Parameter(description = "Search query (minimum 2 characters)", required = true)
+        @Parameter(description = "Search query", required = true)
         @RequestParam("q") 
-        @Size(min = 2, message = "Query must be at least 2 characters") 
         String query,
         
         @Parameter(description = "Filter by title type")

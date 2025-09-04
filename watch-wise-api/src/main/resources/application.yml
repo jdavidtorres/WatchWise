@@ -22,3 +22,8 @@ trakt:
 jwt:
   secret: changemechangemechangemechangeme
   expiration-seconds: 3600
+
+# Title search configuration
+watchwise:
+  titles:
+    default-page-size: 20

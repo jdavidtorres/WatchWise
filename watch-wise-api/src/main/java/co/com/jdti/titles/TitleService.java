@@ -1,5 +1,6 @@
 package co.com.jdti.titles;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -9,9 +10,12 @@ import java.util.Optional;
 public class TitleService {
     
     private final TitleProvider titleProvider;
+    private final int defaultPageSize;
     
-    public TitleService(TitleProvider titleProvider) {
+    public TitleService(TitleProvider titleProvider, 
+                       @Value("${watchwise.titles.default-page-size:20}") int defaultPageSize) {
         this.titleProvider = titleProvider;
+        this.defaultPageSize = defaultPageSize;
     }
     
     /**
@@ -26,8 +30,7 @@ public class TitleService {
             return List.of();
         }
         
-        int pageSize = 20; // Default page size
-        return titleProvider.search(query.trim(), type, page, pageSize);
+        return titleProvider.search(query.trim(), type, page, defaultPageSize);
     }
     
     /**

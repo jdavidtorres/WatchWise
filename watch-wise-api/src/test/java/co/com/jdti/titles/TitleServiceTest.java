@@ -22,7 +22,7 @@ class TitleServiceTest {
 
     @BeforeEach
     void setup() {
-        titleService = new TitleService(titleProvider);
+        titleService = new TitleService(titleProvider, 20);
     }
 
     @Test

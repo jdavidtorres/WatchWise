@@ -61,20 +61,5 @@ public partial class MainPage : ContentPage
         
         // Update bindings
         OnPropertyChanged(nameof(WatchlistItems));
-        
-        // Add a simple demo item if watchlist is empty
-        if (!_watchlistViewModel.WatchlistItems.Any())
-        {
-            var demoTitle = new TitleLite
-            {
-                Id = "tt0133093",
-                Type = TitleType.MOVIE,
-                Name = "The Matrix",
-                Year = 1999,
-                PosterUrl = "https://example.com/matrix.jpg"
-            };
-            await _watchlistService.AddToWatchlistAsync(demoTitle);
-            await _watchlistViewModel.LoadWatchlistAsync();
-        }
     }
 }
