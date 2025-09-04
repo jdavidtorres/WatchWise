@@ -22,4 +22,4 @@ jobs:
       - name: Build with Gradle
         run: |
           cd watch-wise-api
-          gradle test
+          ./gradlew build
