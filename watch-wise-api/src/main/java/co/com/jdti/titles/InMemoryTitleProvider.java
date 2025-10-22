@@ -109,26 +109,25 @@ public class InMemoryTitleProvider implements TitleProvider {
 
     @Override
     public List<TitleLiteDto> search(String query, TitleType type, int page, int pageSize) {
-        // Filter titles by query and type
-        List<TitleDetailDto> filtered = FAKE_TITLES;
+        Stream<TitleDetailDto> stream = FAKE_TITLES.stream();
+        
+        // Filter by query (case-insensitive name matching)
         if (query != null && !query.trim().isEmpty()) {
             String lowerQuery = query.toLowerCase().trim();
-            filtered = filtered.stream()
-                .filter(title -> title.name().toLowerCase().contains(lowerQuery))
-                .toList();
+            stream = stream.filter(title -> 
+                title.name().toLowerCase().contains(lowerQuery)
+            );
         }
+        
+        // Filter by type
         if (type != null) {
-            filtered = filtered.stream()
-                .filter(title -> title.type() == type)
-                .toList();
+            stream = stream.filter(title -> title.type() == type);
         }
-        // Calculate pagination indices
-        int start = Math.max(0, page * pageSize);
-        int end = Math.min(filtered.size(), start + pageSize);
-        if (start >= filtered.size()) {
-            return List.of();
-        }
-        return filtered.subList(start, end).stream()
+        
+        // Apply pagination
+        return stream
+            .skip((long) page * pageSize)
+            .limit(pageSize)
             .map(this::toTitleLite)
             .toList();
     }
