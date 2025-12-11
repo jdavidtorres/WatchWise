@@ -41,8 +41,6 @@ public partial class WatchListPage : ContentPage
                     foreach (var item in loaded)
                         _items.Add(item);
                 }
-                // Reset dirty flag after successfully loading all items
-                _isDirty = false;
             }
             catch (JsonException ex)
             {
@@ -54,7 +52,10 @@ public partial class WatchListPage : ContentPage
             }
         }
         
-        // Subscribe to collection changes after loading to track when save is needed
+        // Reset dirty flag after loading and before subscribing to events
+        _isDirty = false;
+        
+        // Subscribe to collection changes to track when save is needed
         // Always unsubscribe first to ensure we don't have duplicate handlers
         _items.CollectionChanged -= OnItemsChanged;
         _items.CollectionChanged += OnItemsChanged;
