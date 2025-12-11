@@ -40,9 +40,12 @@ public partial class WatchListPage : ContentPage
                 var loaded = JsonSerializer.Deserialize<List<WatchItem>>(json);
                 if (loaded != null)
                 {
+                    // Temporarily unsubscribe to avoid marking as dirty during load
+                    _items.CollectionChanged -= OnItemsChanged;
                     _items.Clear();
                     foreach (var item in loaded)
                         _items.Add(item);
+                    _items.CollectionChanged += OnItemsChanged;
                 }
                 // Reset dirty flag after successfully loading all items
                 _isDirty = false;
