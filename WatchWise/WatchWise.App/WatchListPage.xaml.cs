@@ -19,14 +19,19 @@ public partial class WatchListPage : ContentPage
         InitializeComponent();
         _logger = logger;
         WatchListView.ItemsSource = _items;
-        // Note: Event handler doesn't need unsubscription because _items is owned by this page.
-        // When the page is disposed, _items will also be eligible for garbage collection.
-        _items.CollectionChanged += (s, e) => _isDirty = true;
+    }
+
+    private void OnItemsChanged(object? sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
+    {
+        _isDirty = true;
     }
 
     protected override void OnAppearing()
     {
         base.OnAppearing();
+        // Subscribe to collection changes to track when save is needed
+        _items.CollectionChanged += OnItemsChanged;
+        
         var json = Preferences.Get(WatchListKey, string.Empty);
         if (!string.IsNullOrEmpty(json))
         {
@@ -38,8 +43,9 @@ public partial class WatchListPage : ContentPage
                     _items.Clear();
                     foreach (var item in loaded)
                         _items.Add(item);
-                    _isDirty = false; // Reset dirty flag after loading
                 }
+                // Reset dirty flag after successfully loading all items
+                _isDirty = false;
             }
             catch (JsonException ex)
             {
@@ -63,6 +69,8 @@ public partial class WatchListPage : ContentPage
             Preferences.Set(WatchListKey, json);
             _isDirty = false;
         }
+        // Unsubscribe from event to prevent potential memory leaks
+        _items.CollectionChanged -= OnItemsChanged;
     }
 
     private void OnAddItem(object sender, EventArgs e)
