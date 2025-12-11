@@ -1,6 +1,5 @@
 using System.Collections.ObjectModel;
 using System.Text.Json;
-using System.Linq;
 using Microsoft.Extensions.Logging;
 using Microsoft.Maui.Storage;
 using WatchWise.App.Models;
