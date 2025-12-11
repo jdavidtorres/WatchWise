@@ -29,8 +29,6 @@ public partial class WatchListPage : ContentPage
     protected override void OnAppearing()
     {
         base.OnAppearing();
-        // Subscribe to collection changes to track when save is needed
-        _items.CollectionChanged += OnItemsChanged;
         
         var json = Preferences.Get(WatchListKey, string.Empty);
         if (!string.IsNullOrEmpty(json))
@@ -40,12 +38,9 @@ public partial class WatchListPage : ContentPage
                 var loaded = JsonSerializer.Deserialize<List<WatchItem>>(json);
                 if (loaded != null)
                 {
-                    // Temporarily unsubscribe to avoid marking as dirty during load
-                    _items.CollectionChanged -= OnItemsChanged;
                     _items.Clear();
                     foreach (var item in loaded)
                         _items.Add(item);
-                    _items.CollectionChanged += OnItemsChanged;
                 }
                 // Reset dirty flag after successfully loading all items
                 _isDirty = false;
@@ -59,6 +54,9 @@ public partial class WatchListPage : ContentPage
                 _logger.LogWarning(ex, "Failed to deserialize watchlist data. Starting with empty list.");
             }
         }
+        
+        // Subscribe to collection changes after loading to track when save is needed
+        _items.CollectionChanged += OnItemsChanged;
     }
 
     protected override void OnDisappearing()
