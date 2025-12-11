@@ -19,6 +19,8 @@ public partial class WatchListPage : ContentPage
         InitializeComponent();
         _logger = logger;
         WatchListView.ItemsSource = _items;
+        // Note: Event handler doesn't need unsubscription because _items is owned by this page.
+        // When the page is disposed, _items will also be eligible for garbage collection.
         _items.CollectionChanged += (s, e) => _isDirty = true;
     }
 
@@ -36,6 +38,7 @@ public partial class WatchListPage : ContentPage
                     _items.Clear();
                     foreach (var item in loaded)
                         _items.Add(item);
+                    _isDirty = false; // Reset dirty flag after loading
                 }
             }
             catch (JsonException ex)
@@ -55,6 +58,7 @@ public partial class WatchListPage : ContentPage
         // Only save if items have changed to avoid redundant serialization
         if (_isDirty)
         {
+            // ObservableCollection serializes to JSON array (same as List)
             var json = JsonSerializer.Serialize(_items);
             Preferences.Set(WatchListKey, json);
             _isDirty = false;
