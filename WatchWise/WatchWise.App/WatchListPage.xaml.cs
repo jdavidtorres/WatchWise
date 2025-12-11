@@ -1,6 +1,7 @@
 using System.Collections.ObjectModel;
 using System.Text.Json;
 using System.Linq;
+using Microsoft.Extensions.Logging;
 using Microsoft.Maui.Storage;
 using WatchWise.App.Models;
 
@@ -10,11 +11,15 @@ public partial class WatchListPage : ContentPage
 {
     private const string WatchListKey = "watchlist";
     private readonly ObservableCollection<WatchItem> _items = new();
+    private readonly ILogger<WatchListPage> _logger;
+    private bool _isDirty;
 
-    public WatchListPage()
+    public WatchListPage(ILogger<WatchListPage> logger)
     {
         InitializeComponent();
+        _logger = logger;
         WatchListView.ItemsSource = _items;
+        _items.CollectionChanged += (s, e) => _isDirty = true;
     }
 
     protected override void OnAppearing()
@@ -33,9 +38,13 @@ public partial class WatchListPage : ContentPage
                         _items.Add(item);
                 }
             }
-            catch
+            catch (JsonException ex)
             {
-                // ignore deserialize errors
+                // Failed to deserialize saved watchlist data. This can occur if:
+                // - The data format changed between app versions
+                // - The stored data was corrupted
+                // Starting with an empty watchlist instead of crashing
+                _logger.LogWarning(ex, "Failed to deserialize watchlist data. Starting with empty list.");
             }
         }
     }
@@ -43,8 +52,13 @@ public partial class WatchListPage : ContentPage
     protected override void OnDisappearing()
     {
         base.OnDisappearing();
-        var json = JsonSerializer.Serialize(_items.ToList());
-        Preferences.Set(WatchListKey, json);
+        // Only save if items have changed to avoid redundant serialization
+        if (_isDirty)
+        {
+            var json = JsonSerializer.Serialize(_items);
+            Preferences.Set(WatchListKey, json);
+            _isDirty = false;
+        }
     }
 
     private void OnAddItem(object sender, EventArgs e)

@@ -15,6 +15,9 @@ namespace WatchWise.App
                     fonts.AddFont("OpenSans-Semibold.ttf", "OpenSansSemibold");
                 });
 
+            // Register pages for dependency injection
+            builder.Services.AddTransient<WatchListPage>();
+
 #if DEBUG
     		builder.Logging.AddDebug();
 #endif
