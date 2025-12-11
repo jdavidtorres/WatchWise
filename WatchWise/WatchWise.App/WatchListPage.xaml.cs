@@ -12,7 +12,6 @@ public partial class WatchListPage : ContentPage
     private readonly ObservableCollection<WatchItem> _items = new();
     private readonly ILogger<WatchListPage> _logger;
     private bool _isDirty;
-    private bool _isSubscribed;
 
     public WatchListPage(ILogger<WatchListPage> logger)
     {
@@ -56,11 +55,9 @@ public partial class WatchListPage : ContentPage
         }
         
         // Subscribe to collection changes after loading to track when save is needed
-        if (!_isSubscribed)
-        {
-            _items.CollectionChanged += OnItemsChanged;
-            _isSubscribed = true;
-        }
+        // Always unsubscribe first to ensure we don't have duplicate handlers
+        _items.CollectionChanged -= OnItemsChanged;
+        _items.CollectionChanged += OnItemsChanged;
     }
 
     protected override void OnDisappearing()
@@ -75,11 +72,7 @@ public partial class WatchListPage : ContentPage
             _isDirty = false;
         }
         // Unsubscribe from event to prevent potential memory leaks
-        if (_isSubscribed)
-        {
-            _items.CollectionChanged -= OnItemsChanged;
-            _isSubscribed = false;
-        }
+        _items.CollectionChanged -= OnItemsChanged;
     }
 
     private void OnAddItem(object sender, EventArgs e)
