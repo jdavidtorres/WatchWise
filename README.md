@@ -21,14 +21,46 @@ Monorepo que contiene el cliente móvil y la API backend para **WatchWise**, una
 * **Auth**
   * `POST /auth/register` → register user
   * `POST /auth/login` → JWT issuance
-* **Titles**
-  * `GET /titles/{id}` → fetch metadata snapshot
-  * `GET /titles?query=` → search titles
+* **Titles** 🆕
+  * `GET /api/titles/search?q=&type=&page=` → search titles with filtering and pagination
+  * `GET /api/titles/{id}` → get detailed title information
+* **Watchlist**
+  * `GET /watchlist` → get user's watchlist (requires auth)
+  * `POST /watchlist/{canonicalId}` → add to watchlist (requires auth)
+  * `DELETE /watchlist/{canonicalId}` → remove from watchlist (requires auth)
 * **Availability**
   * `GET /availability/{id}?country=XX` → providers by country
 * **Sync**
   * `POST /sync` → batch up user changes (watchlist, ratings, progress)
   * `GET /me/state?since=` → deltas since timestamp
+
+---
+
+## 🔎 Testing the Search Functionality
+
+The MVP implementation includes title search and detail endpoints with a fake data provider containing popular movies and TV shows.
+
+### Quick API Tests
+
+```bash
+# Search for movies/shows
+curl "http://localhost:8080/api/titles/search?q=matrix"
+curl "http://localhost:8080/api/titles/search?q=breaking&type=SHOW"
+curl "http://localhost:8080/api/titles/search?q=the&type=MOVIE&page=0"
+
+# Get title details
+curl "http://localhost:8080/api/titles/tt0133093"  # The Matrix
+curl "http://localhost:8080/api/titles/tt0903747"  # Breaking Bad
+
+# Test error handling
+curl "http://localhost:8080/api/titles/nonexistent"  # Returns 404
+```
+
+### Available Test Data
+
+The in-memory provider includes these titles:
+- **Movies**: The Shawshank Redemption, The Godfather, The Dark Knight, Interstellar, The Matrix, Schindler's List
+- **TV Shows**: Breaking Bad, Game of Thrones
 
 ---
 
@@ -103,7 +135,7 @@ docker compose up -d postgres redis
 ./gradlew bootRun
 ```
 
-**Backend**: [http://localhost:8080](http://localhost:8080)
+**Backend**: [http://localhost:8080](http://localhost:8080)  
 **Swagger UI**: [http://localhost:8080/swagger-ui.html](http://localhost:8080/swagger-ui.html)
 
 ---
