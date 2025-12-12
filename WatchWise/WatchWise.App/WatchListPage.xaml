@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:models="clr-namespace:WatchWise.App.Models"
+             x:Class="WatchWise.App.WatchListPage"
+             Title="Watchlist">
+    <VerticalStackLayout Padding="20" Spacing="15">
+        <HorizontalStackLayout Spacing="10">
+            <Entry x:Name="NewItemEntry" Placeholder="Add a show..." HorizontalOptions="FillAndExpand" />
+            <Button Text="Add" Clicked="OnAddItem" />
+        </HorizontalStackLayout>
+        <CollectionView x:Name="WatchListView" SelectionMode="None">
+            <CollectionView.ItemTemplate>
+                <DataTemplate x:DataType="models:WatchItem">
+                    <Grid Padding="5" ColumnDefinitions="Auto,*,Auto" ColumnSpacing="10">
+                        <CheckBox IsChecked="{Binding IsWatched}" />
+                        <Label Grid.Column="1" Text="{Binding Title}" VerticalOptions="Center" />
+                        <Button Grid.Column="2" Text="Remove" Clicked="OnRemoveItem" CommandParameter="{Binding}" />
+                    </Grid>
+                </DataTemplate>
+            </CollectionView.ItemTemplate>
+        </CollectionView>
+    </VerticalStackLayout>
+</ContentPage>

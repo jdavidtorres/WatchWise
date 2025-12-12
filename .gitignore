@@ -7,6 +7,20 @@ obj/
 .vs/
 .vscode/
 
+# Visual Studio
+.vs/
+
+# Build artifacts
+bin/
+obj/
+**/bin/
+**/obj/
+Platforms/**/bin/
+Platforms/**/obj/
+
+# Local .NET
+.dotnet/
+
 # .NET Runtime artifacts
 [Dd]ebug/
 [Dd]ebugPublic/
