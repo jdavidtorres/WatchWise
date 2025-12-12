@@ -1,0 +1,25 @@
+---
+name: API CI
+
+'on':
+  push:
+    paths:
+      - 'watch-wise-api/**'
+  pull_request:
+    paths:
+      - 'watch-wise-api/**'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up JDK
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '21'
+      - name: Build with Gradle
+        run: |
+          cd watch-wise-api
+          ./gradlew build
