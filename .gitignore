@@ -1,2 +1,103 @@
-### VS Code ###
+# .NET Core / MAUI
+bin/
+obj/
+*.user
+*.userosscache
+*.sln.docstates
+.vs/
 .vscode/
+
+# Visual Studio
+.vs/
+
+# Build artifacts
+bin/
+obj/
+**/bin/
+**/obj/
+Platforms/**/bin/
+Platforms/**/obj/
+
+# Local .NET
+.dotnet/
+
+# .NET Runtime artifacts
+[Dd]ebug/
+[Dd]ebugPublic/
+[Rr]elease/
+[Rr]eleases/
+x64/
+x86/
+[Ww][Ii][Nn]32/
+[Aa][Rr][Mm]/
+[Aa][Rr][Mm]64/
+bld/
+[Bb]in/
+[Oo]bj/
+[Ll]og/
+[Ll]ogs/
+
+# Java / Gradle
+build/
+.gradle/
+*.jar
+*.war
+*.ear
+*.class
+gradle-app.setting
+!gradle-wrapper.jar
+.gradletasknamecache
+
+# IDEs
+.idea/
+*.iml
+*.iws
+*.ipr
+.vscode/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Package files
+*.7z
+*.dmg
+*.gz
+*.iso
+*.jar
+*.rar
+*.tar
+*.zip
+
+# Logs
+*.log
+logs/
+log/
+
+# Runtime data
+pids
+*.pid
+*.seed
+*.pid.lock
+
+# Coverage directory used by tools like istanbul
+coverage/
+*.lcov
+
+# nyc test coverage
+.nyc_output
+
+# Environment variables
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local

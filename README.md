@@ -1,22 +1,6 @@
-# watch-wise-api — Backend (Spring Boot + PostgreSQL + Redis)
+# WatchWise — Client para Trakt.tv
 
-Backend service for **WatchWise.App**. Provides user management, metadata cache, availability snapshots, and sync endpoints integrating external APIs (Trakt, JustWatch).
-
----
-
-## Tech Stack
-
-* **Java 21** / **Spring Boot 3.4+**
-* **Gradle** (Groovy DSL)
-* **PostgreSQL** (persistent store)
-* **Redis** (hot cache)
-* **Spring Data JPA** + Hibernate
-* **Spring Security** (JWT stateless)
-* **Spring Validation**
-* **MapStruct** (mappers)
-* **Flyway** (DB migrations)
-* **Testcontainers** (integration testing)
-* **OpenAPI/Swagger** (API docs via SpringDoc 2.8.9)
+Monorepo que contiene el cliente móvil y la API backend para **WatchWise**, una aplicación que integra con Trakt.tv para gestionar watchlists, ratings y progreso de visualización.
 
 ---
 
@@ -37,60 +21,14 @@ Backend service for **WatchWise.App**. Provides user management, metadata cache,
 * **Auth**
   * `POST /auth/register` → register user
   * `POST /auth/login` → JWT issuance
-* **Titles** 🆕
-  * `GET /api/titles/search?q=&type=&page=` → search titles with filtering and pagination
-  * `GET /api/titles/{id}` → get detailed title information
-* **Watchlist**
-  * `GET /watchlist` → get user's watchlist (requires auth)
-  * `POST /watchlist/{canonicalId}` → add to watchlist (requires auth)
-  * `DELETE /watchlist/{canonicalId}` → remove from watchlist (requires auth)
+* **Titles**
+  * `GET /titles/{id}` → fetch metadata snapshot
+  * `GET /titles?query=` → search titles
 * **Availability**
   * `GET /availability/{id}?country=XX` → providers by country
 * **Sync**
   * `POST /sync` → batch up user changes (watchlist, ratings, progress)
   * `GET /me/state?since=` → deltas since timestamp
-
----
-
-## 🔎 Testing the Search Functionality
-
-The MVP implementation includes title search and detail endpoints with a fake data provider containing popular movies and TV shows.
-
-### Quick API Tests
-
-```bash
-# Search for movies/shows
-curl "http://localhost:8080/api/titles/search?q=matrix"
-curl "http://localhost:8080/api/titles/search?q=breaking&type=SHOW"
-curl "http://localhost:8080/api/titles/search?q=the&type=MOVIE&page=0"
-
-# Get title details
-curl "http://localhost:8080/api/titles/tt0133093"  # The Matrix
-curl "http://localhost:8080/api/titles/tt0903747"  # Breaking Bad
-
-# Test error handling
-curl "http://localhost:8080/api/titles/nonexistent"  # Returns 404
-```
-
-### Available Test Data
-
-The in-memory provider includes these titles:
-- **Movies**: The Shawshank Redemption, The Godfather, The Dark Knight, Interstellar, The Matrix, Schindler's List
-- **TV Shows**: Breaking Bad, Game of Thrones
-
-### Frontend Integration
-
-The .NET MAUI frontend includes:
-- **Models**: `TitleType`, `TitleLite`, `TitleDetail` matching backend DTOs
-- **Services**: `IApiClient`, `ApiClient` with structured API calls
-- **ViewModels**: `SearchViewModel`, `TitleDetailViewModel`, `WatchlistViewModel` with MVVM pattern
-- **UI**: Updated MainPage with search, results display, and watchlist functionality
-
-Run the frontend demo:
-```bash
-cd WatchWise
-./frontend-demo.sh
-```
 
 ---
 
@@ -132,75 +70,93 @@ cd WatchWise
 
 ---
 
-## Observability
+## 🚀 Inicio Rápido
 
-* Spring Boot Actuator (`/actuator/health`, `/metrics`)
-* Micrometer → Prometheus/Grafana
-* Logs structured JSON (traceId)
-* Metrics: error rate, cache hit ratio, latency, job success rate
+### Prerrequisitos
 
----
+- **Frontend**: .NET 9 + MAUI workload
+- **Backend**: JDK 21 + Docker (PostgreSQL/Redis)
 
-## Local Dev Setup
+### Ejecutar el Frontend (.NET MAUI)
 
-### Requirements
+```bash
+cd WatchWise
+dotnet restore
+dotnet build
 
-* JDK 21+
-* Docker (for Postgres + Redis)
-* Gradle 8+
+# Para Android (requiere emulador)
+dotnet build -f net9.0-android
 
-### Run services
+# Para Windows/macOS
+dotnet run
+```
+
+### Ejecutar el Backend (Spring Boot)
 
 ```bash
 cd watch-wise-api
+
+# Levantar servicios de base de datos
 docker compose up -d postgres redis
+
+# Ejecutar aplicación
+./gradlew bootRun
 ```
 
-### Run app
+**Backend**: [http://localhost:8080](http://localhost:8080)
+**Swagger UI**: [http://localhost:8080/swagger-ui.html](http://localhost:8080/swagger-ui.html)
+
+---
+
+## 🔧 Desarrollo
+
+### CI/CD
+
+- **Pipeline Frontend**: Se ejecuta solo con cambios en `WatchWise/**`
+- **Pipeline Backend**: Se ejecuta solo con cambios en `watch-wise-api/**`
+
+### Testing
 
 ```bash
+# Frontend
+cd WatchWise
+dotnet test
+
+# Backend
 cd watch-wise-api
-gradle bootRun
-```
-
-Backend available at [http://localhost:8080](http://localhost:8080)
-
-Swagger UI at [http://localhost:8080/swagger-ui.html](http://localhost:8080/swagger-ui.html)
-
----
-
-## Testing
-
-* **Unit tests**: JUnit 5 + AssertJ (mocked dependencies, no in-memory DB)
-* **Integration tests**: SpringBootTest + Testcontainers (Postgres, Redis) — optional
-* **Contract tests**: OpenAPI validation
-* Coverage target: ≥85% line, ≥50% branch
-
-```bash
-cd watch-wise-api
-gradle test
+./gradlew test
 ```
 
 ---
 
-## Deployment
+## 📋 Stack Tecnológico
 
-* Containerized with Docker
-* CI/CD pipeline: build → test → publish Docker image → deploy (staging/prod)
-* Config via environment variables (see `application.yml`)
+### Frontend (WatchWise)
+- **.NET MAUI** (C#) - Framework multiplataforma
+- **SQLite** - Base de datos local
+- **HttpClient** - Comunicación con backend
+
+### Backend (watch-wise-api)
+- **Java 21** / **Spring Boot 3.4+**
+- **Gradle** - Build tool
+- **PostgreSQL** - Base de datos principal
+- **Redis** - Cache
+- **Spring Security** - Autenticación JWT
+- **OpenAPI/Swagger** - Documentación API
 
 ---
 
-## Roadmap (Backend‑only excerpts)
+## 🎯 Funcionalidades
 
-* Index titles in Elasticsearch/OpenSearch for advanced search
-* Add notifications (new episodes, availability changes)
-* WebSockets/SSE for realtime sync events
-* Fine-grained roles/permissions (admin, support)
+- **Autenticación** con Trakt.tv
+- **Sincronización** de watchlists, ratings y progreso
+- **Cache inteligente** de metadatos
+- **Disponibilidad** por país/plataforma
+- **Interfaz nativa** para Android, iOS, Windows, macOS
 
 ---
 
-## License
+## 📝 Licencia
 
-TBD (MIT/Apache‑2.0).
+[MIT License](LICENSE) - Copyright (c) 2025
 
