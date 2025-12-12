@@ -9,6 +9,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.Size;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -49,6 +50,7 @@ public class TitleController {
     public List<TitleLiteDto> search(
         @Parameter(description = "Search query", required = true)
         @RequestParam("q") 
+        @Size(min=2, message="Query must be at least 2 characters")
         String query,
         
         @Parameter(description = "Filter by title type")
