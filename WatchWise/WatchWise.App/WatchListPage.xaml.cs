@@ -1,6 +1,6 @@
 using System.Collections.ObjectModel;
 using System.Text.Json;
-using System.Linq;
+using Microsoft.Extensions.Logging;
 using Microsoft.Maui.Storage;
 using WatchWise.App.Models;
 
@@ -10,16 +10,25 @@ public partial class WatchListPage : ContentPage
 {
     private const string WatchListKey = "watchlist";
     private readonly ObservableCollection<WatchItem> _items = new();
+    private readonly ILogger<WatchListPage> _logger;
+    private bool _isDirty;
 
-    public WatchListPage()
+    public WatchListPage(ILogger<WatchListPage> logger)
     {
         InitializeComponent();
+        _logger = logger;
         WatchListView.ItemsSource = _items;
+    }
+
+    private void OnItemsChanged(object? sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
+    {
+        _isDirty = true;
     }
 
     protected override void OnAppearing()
     {
         base.OnAppearing();
+        
         var json = Preferences.Get(WatchListKey, string.Empty);
         if (!string.IsNullOrEmpty(json))
         {
@@ -33,18 +42,38 @@ public partial class WatchListPage : ContentPage
                         _items.Add(item);
                 }
             }
-            catch
+            catch (JsonException ex)
             {
-                // ignore deserialize errors
+                // Failed to deserialize saved watchlist data. This can occur if:
+                // - The data format changed between app versions
+                // - The stored data was corrupted
+                // Starting with an empty watchlist instead of crashing
+                _logger.LogWarning(ex, "Failed to deserialize watchlist data. Starting with empty list.");
             }
         }
+        
+        // Reset dirty flag after loading and before subscribing to events
+        _isDirty = false;
+        
+        // Subscribe to collection changes to track when save is needed
+        // Always unsubscribe first to ensure we don't have duplicate handlers
+        _items.CollectionChanged -= OnItemsChanged;
+        _items.CollectionChanged += OnItemsChanged;
     }
 
     protected override void OnDisappearing()
     {
         base.OnDisappearing();
-        var json = JsonSerializer.Serialize(_items.ToList());
-        Preferences.Set(WatchListKey, json);
+        // Only save if items have changed to avoid redundant serialization
+        if (_isDirty)
+        {
+            // ObservableCollection serializes to JSON array (same as List)
+            var json = JsonSerializer.Serialize(_items);
+            Preferences.Set(WatchListKey, json);
+            _isDirty = false;
+        }
+        // Unsubscribe from event to prevent potential memory leaks
+        _items.CollectionChanged -= OnItemsChanged;
     }
 
     private void OnAddItem(object sender, EventArgs e)
