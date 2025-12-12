@@ -4,26 +4,101 @@ Monorepo que contiene el cliente móvil y la API backend para **WatchWise**, una
 
 ---
 
-## 📁 Estructura del Proyecto
+## Architecture
 
+**Hexagonal / Clean Architecture**:
+
+* **Controllers**: REST entrypoints
+* **Services**: business orchestration
+* **UseCases**: domain logic
+* **Repositories**: persistence abstractions
+* **Infra**: Postgres, Redis, external API clients
+
+---
+
+## API Surface (MVP)
+
+* **Auth**
+  * `POST /auth/register` → register user
+  * `POST /auth/login` → JWT issuance
+* **Titles** 🆕
+  * `GET /api/titles/search?q=&type=&page=` → search titles with filtering and pagination
+  * `GET /api/titles/{id}` → get detailed title information
+* **Watchlist**
+  * `GET /watchlist` → get user's watchlist (requires auth)
+  * `POST /watchlist/{canonicalId}` → add to watchlist (requires auth)
+  * `DELETE /watchlist/{canonicalId}` → remove from watchlist (requires auth)
+* **Availability**
+  * `GET /availability/{id}?country=XX` → providers by country
+* **Sync**
+  * `POST /sync` → batch up user changes (watchlist, ratings, progress)
+  * `GET /me/state?since=` → deltas since timestamp
+
+---
+
+## 🔎 Testing the Search Functionality
+
+The MVP implementation includes title search and detail endpoints with a fake data provider containing popular movies and TV shows.
+
+### Quick API Tests
+
+```bash
+# Search for movies/shows
+curl "http://localhost:8080/api/titles/search?q=matrix"
+curl "http://localhost:8080/api/titles/search?q=breaking&type=SHOW"
+curl "http://localhost:8080/api/titles/search?q=the&type=MOVIE&page=0"
+
+# Get title details
+curl "http://localhost:8080/api/titles/tt0133093"  # The Matrix
+curl "http://localhost:8080/api/titles/tt0903747"  # Breaking Bad
+
+# Test error handling
+curl "http://localhost:8080/api/titles/nonexistent"  # Returns 404
 ```
-/ (root)
-│  .gitignore                # Configuración git para .NET, Java, Gradle, IDEs
-│  README.md                 # Este archivo
-│  LICENSE                   # Licencia MIT
-│  .github/workflows/        # Pipelines CI/CD
-│
-├─ WatchWise/                 # .NET MAUI (C#) + SQLite
-│  ├─ WatchWise.App/         # Proyecto principal MAUI
-│  ├─ WatchWise.sln          # Solución .NET
-│  └─ README.md              # Documentación específica del frontend
-│
-└─ watch-wise-api/           # Spring Boot (Java 21) + Gradle + PostgreSQL
-   ├─ src/                   # Código fuente
-   ├─ build.gradle           # Configuración de dependencias
-   ├─ gradlew               # Gradle wrapper
-   └─ README.md             # Documentación específica del backend
-```
+
+### Available Test Data
+
+The in-memory provider includes these titles:
+- **Movies**: The Shawshank Redemption, The Godfather, The Dark Knight, Interstellar, The Matrix, Schindler's List
+- **TV Shows**: Breaking Bad, Game of Thrones
+
+---
+
+## Persistence Model
+
+* `User` (id, email, passwordHash, roles)
+* `UserWatchlist` (userId, canonicalId, addedAt)
+* `UserRating` (userId, canonicalId, rating, ratedAt)
+* `UserProgress` (userId, canonicalId, progressSeconds, updatedAt)
+* `TitleCache` (canonicalId, title, year, type, posterUrl, overview, genres, runtime, ratingAvg, lastSyncedAt, expiresAt, rawPayload)
+* `AvailabilitySnapshot` (canonicalId, countryCode, provider, offerType, price, currency, deepLink, collectedAt, expiresAt)
+
+---
+
+## Caching Strategy
+
+* **Titles**: TTL 7–30d (shorter for popular, longer for long-tail)
+* **Availability**: TTL 24–72h
+* **Redis**: query results & hot objects
+
+---
+
+## Jobs & Scheduling
+
+* **Popular refresh**: every 6–12h
+* **New releases**: daily
+* **Availability refresh**: every 24–72h
+* **On-demand refresh** when snapshot expired on request
+
+---
+
+## Security
+
+* JWT stateless auth with roles
+* Spring Security filter chain (custom JWT filter)
+* Swagger/OpenAPI under `permitAll`
+* Global CORS config
+* GDPR/CCPA endpoints: account deletion
 
 ---
 
@@ -60,7 +135,7 @@ docker compose up -d postgres redis
 ./gradlew bootRun
 ```
 
-**Backend**: [http://localhost:8080](http://localhost:8080)
+**Backend**: [http://localhost:8080](http://localhost:8080)  
 **Swagger UI**: [http://localhost:8080/swagger-ui.html](http://localhost:8080/swagger-ui.html)
 
 ---

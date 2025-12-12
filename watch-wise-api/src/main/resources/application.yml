@@ -1,9 +1,18 @@
 spring:
   application:
     name: watch-wise-api
+  datasource:
+    url: ${SPRING_DATASOURCE_URL:jdbc:postgresql://localhost:5432/watchwise}
+    username: ${SPRING_DATASOURCE_USERNAME:watchwise}
+    password: ${SPRING_DATASOURCE_PASSWORD:watchwise}
+    driver-class-name: org.postgresql.Driver
   jpa:
     hibernate:
       ddl-auto: update
+    database-platform: org.hibernate.dialect.PostgreSQLDialect
+    show-sql: false
+  flyway:
+    enabled: false
 
 trakt:
   api:
@@ -12,3 +21,8 @@ trakt:
 jwt:
   secret: changemechangemechangemechangeme
   expiration-seconds: 3600
+
+# Title search configuration
+watchwise:
+  titles:
+    default-page-size: 20
