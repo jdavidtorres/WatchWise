@@ -1,7 +1,7 @@
 using WatchWise.App.Models;
 using WatchWise.App.Services;
 
-namespace WatchWise.App.Console;
+namespace WatchWise.App.Demo;
 
 class Program
 {

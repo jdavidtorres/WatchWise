@@ -68,6 +68,8 @@
 		<Compile Remove="App.xaml.cs" />
 		<Compile Remove="AppShell.xaml.cs" />
 		<Compile Remove="MainPage.xaml.cs" />
+		<Compile Remove="MauiProgram.cs" />
+		<Compile Remove="WatchListPage.xaml.cs" />
 		<None Remove="**\*.xaml" />
 	</ItemGroup>
 

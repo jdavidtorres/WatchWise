@@ -34,6 +34,15 @@ namespace WatchWise.App.Services
                     Value TEXT,
                     CreatedAt DATETIME DEFAULT CURRENT_TIMESTAMP
                 );
+
+                CREATE TABLE IF NOT EXISTS Watchlist (
+                    Id TEXT PRIMARY KEY,
+                    Type TEXT NOT NULL,
+                    Name TEXT NOT NULL,
+                    Year INTEGER,
+                    PosterUrl TEXT,
+                    CreatedAt TEXT NOT NULL DEFAULT (datetime('now'))
+                );
             ";
             
             await command.ExecuteNonQueryAsync();
